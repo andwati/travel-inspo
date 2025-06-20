@@ -80,3 +80,18 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                 chat_id=query.message.chat.id,  # type: ignore
                 text="Sorry, I couldn't find information for that destination.",
             )
+
+    # Show the keyboard again for further inspiration
+    keyboard = [
+        [InlineKeyboardButton("Beaches 🏖️", callback_data="beaches")],
+        [InlineKeyboardButton("Mountains 🏔️", callback_data="mountains")],
+        [InlineKeyboardButton("Cities 🏙️", callback_data="cities")],
+        [InlineKeyboardButton("Adventure 🧗", callback_data="adventure")],
+        [InlineKeyboardButton("Ancient Ruins 🏛️", callback_data="ancient ruins")],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await context.bot.send_message(
+        chat_id=query.message.chat.id,  # type: ignore
+        text="What kind of adventure would you like to explore next?",
+        reply_markup=reply_markup,
+    )

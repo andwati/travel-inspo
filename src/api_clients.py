@@ -48,7 +48,7 @@ def get_destination_info(destination: str) -> dict[str, str] | None:
     Fetches a summary and URL for a given destination from Wikipedia.
     """
     wiki_wiki = wikipediaapi.Wikipedia(
-        user_agent="TravelInspoBot/1.0 (andwatiian@gmail.com)",
+        user_agent="TravelInspoBot/1.0 (https://github.com/andwatiian/travel-inspo; andwatiian@gmail.com) wikipediaapi/0.6.0",
         language="en",
     )
     page = wiki_wiki.page(destination)
