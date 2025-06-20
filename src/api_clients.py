@@ -4,8 +4,8 @@ import wikipediaapi
 import requests
 
 
-def get_unsplash_image(query: str) -> dict | None:
-    """Fetch an image from Unsplash based on the query."""
+def get_unsplash_image(query: str) -> list[dict] | None:
+    """Fetch images from Unsplash based on the query."""
     access_key = os.getenv("UNSPLASH_ACCESS_KEY")
     if not access_key:
         raise ValueError("UNSPLASH_ACCESS_KEY is not set in the .env file")
@@ -22,11 +22,17 @@ def get_unsplash_image(query: str) -> dict | None:
         response = requests.get(url, params=params)
         response.raise_for_status()
         data = response.json()
-        return {
-            "url": data["urls"]["regular"],
-            "photographer_name": data["user"]["name"],
-            "photographer_profile": data["user"]["links"]["html"],
-        }
+        # data is a list of photo dicts
+        images = []
+        for item in data:
+            images.append(
+                {
+                    "url": item["urls"]["regular"],
+                    "photographer_name": item["user"]["name"],
+                    "photographer_profile": item["user"]["links"]["html"],
+                }
+            )
+        return images
 
     except requests.exceptions.RequestException as e:
         print(f"Error fetching image from Unsplash: {e}")
@@ -45,8 +51,8 @@ def get_destination_info(destination: str) -> dict | None:
 
     if page.exists():
         return {
-            "Summary": page.summary.split("\n")[0],
-            "URL": page.fullurl,
+            "summary": page.summary.split("\n")[0],
+            "url": page.fullurl,
         }
     else:
         print(f"No Wikipedia page found for {destination}.")

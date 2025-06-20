@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from src.bot import run_bot
+from src.bot import main as run_bot
 
 
 load_dotenv()
