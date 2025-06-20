@@ -62,19 +62,29 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         image_data = get_unsplash_image(destination_name)
 
         if image_data and info:
-            image = image_data[0]  # Get the first image
+            # Send the first image with the main caption
+            first_image = image_data[0]
             caption = (
                 f"📍 *{destination_name}*\n\n"
                 f"{info['summary']}\n\n"
                 f"[Read more on Wikipedia]({info['url']})\n\n"
-                f"📸 Photo by [{image['photographer_name']}]({image['photographer_profile']}) on Unsplash"
+                f"📸 Photo by [{first_image['photographer_name']}]({first_image['photographer_profile']}) on Unsplash"
             )
             await context.bot.send_photo(
                 chat_id=query.message.chat.id,  # type: ignore
-                photo=image["url"],
+                photo=first_image["url"],
                 caption=caption,
                 parse_mode="Markdown",
             )
+            # Send the next 3 images with just photographer credit
+            for image in image_data[1:]:
+                credit = f"📸 Photo by [{image['photographer_name']}]({image['photographer_profile']}) on Unsplash"
+                await context.bot.send_photo(
+                    chat_id=query.message.chat.id,  # type: ignore
+                    photo=image["url"],
+                    caption=credit,
+                    parse_mode="Markdown",
+                )
         else:
             await context.bot.send_message(
                 chat_id=query.message.chat.id,  # type: ignore
