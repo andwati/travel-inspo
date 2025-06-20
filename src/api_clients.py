@@ -1,17 +1,21 @@
 import os
-import os
-import wikipediaapi
+import wikipediaapi  # type: ignore
 import requests
 
 
-def get_unsplash_image(query: str) -> list[dict] | None:
+from typing import List, Dict, Optional
+
+
+def get_unsplash_image(query: str) -> Optional[List[Dict[str, str]]]:
     """Fetch images from Unsplash based on the query."""
     access_key = os.getenv("UNSPLASH_ACCESS_KEY")
     if not access_key:
         raise ValueError("UNSPLASH_ACCESS_KEY is not set in the .env file")
     url = "https://api.unsplash.com/photos/random"
 
-    params = {
+    from typing import Union
+
+    params: Dict[str, Union[str, int]] = {
         "query": query,
         "client_id": access_key,
         "orientation": "landscape",
@@ -23,7 +27,7 @@ def get_unsplash_image(query: str) -> list[dict] | None:
         response.raise_for_status()
         data = response.json()
         # data is a list of photo dicts
-        images = []
+        images: List[Dict[str, str]] = []
         for item in data:
             images.append(
                 {
@@ -39,7 +43,7 @@ def get_unsplash_image(query: str) -> list[dict] | None:
         return None
 
 
-def get_destination_info(destination: str) -> dict | None:
+def get_destination_info(destination: str) -> dict[str, str] | None:
     """
     Fetches a summary and URL for a given destination from Wikipedia.
     """
@@ -51,8 +55,8 @@ def get_destination_info(destination: str) -> dict | None:
 
     if page.exists():
         return {
-            "summary": page.summary.split("\n")[0],
-            "url": page.fullurl,
+            "summary": str(page.summary.split("\n")[0]),
+            "url": str(page.fullurl),
         }
     else:
         print(f"No Wikipedia page found for {destination}.")

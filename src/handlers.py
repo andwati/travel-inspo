@@ -27,11 +27,12 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     ]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text(
-        "Welcome, wanderer! ✨\n\nI'm your personal TravelInspo Bot. "
-        "What kind of adventure are you dreaming of today?",
-        reply_markup=reply_markup,
-    )
+    if update.message:
+        await update.message.reply_text(
+            "Welcome, wanderer! ✨\n\nI'm your personal TravelInspo Bot. "
+            "What kind of adventure are you dreaming of today?",
+            reply_markup=reply_markup,
+        )
 
 
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -42,6 +43,9 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         context (ContextTypes.DEFAULT_TYPE): The context of the update.
     """
     query = update.callback_query
+    if query is None:
+        return
+
     await query.answer()
 
     interest = query.data
@@ -66,12 +70,13 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                 f"📸 Photo by [{image['photographer_name']}]({image['photographer_profile']}) on Unsplash"
             )
             await context.bot.send_photo(
-                chat_id=query.message.chat_id,
+                chat_id=query.message.chat.id,  # type: ignore
                 photo=image["url"],
                 caption=caption,
                 parse_mode="Markdown",
             )
         else:
-            await query.message.reply_text(
-                "Sorry, I couldn't find information for that destination."
+            await context.bot.send_message(
+                chat_id=query.message.chat.id,  # type: ignore
+                text="Sorry, I couldn't find information for that destination.",
             )
